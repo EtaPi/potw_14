@@ -4,14 +4,18 @@ require 'rake'
 
 task default: ["build", "run"]
 
-task :build, [:which] do |t, args|
+task :build do
   puts "Building..."
-  source = Rake::FileList["**/*.c"]
+  source = Rake::FileList["**/*.c"].exclude("util.c")
 
-  `clang #{source} -Wall -Wextra -Wpedantic -o c1`
+  `clang util.c -Wall -Wextra -Wpedantic -c`
 
+  source.each do |s|
+    root = File.basename(s, ".*")
+    `clang #{s} util.o -Wall -Wextra -Wpedantic -o #{root}`
+  end
 end
 
 task :run do
-  exec( "./c1" )
+  exec( "./c2" )
 end

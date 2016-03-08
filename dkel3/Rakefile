@@ -1,0 +1,17 @@
+# Rakefile
+
+require 'rake'
+
+task default: ["build", "run"]
+
+task :build, [:which] do |t, args|
+  puts "Building..."
+  source = Rake::FileList["**/*.c"]
+
+  `clang #{source} -Wall -Wextra -Wpedantic -o c1`
+
+end
+
+task :run do
+  exec( "./c1" )
+end

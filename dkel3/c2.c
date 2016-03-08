@@ -22,6 +22,10 @@ int main() {
   if (compare( test, out, size )) {
     printf("Got: %s\n", out);
   }
+
+  free( out );
+
+  return 0;
 }
 
 void xor( uint32_t size, char* a, char* b, char* out ) {

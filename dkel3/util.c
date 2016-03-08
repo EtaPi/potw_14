@@ -123,3 +123,14 @@ char to_hex( uint8_t in ) {
 
   return lookup[ in & 0xF ];
 }
+
+// ------------------------------------
+// to_hex
+//  * turn byte into hex character
+// ------------------------------------
+
+char xor_char( char a, char b ) {
+  uint8_t ret = parse_hex( a ) ^ parse_hex( b );
+
+  return to_hex( ret );
+}

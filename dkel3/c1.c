@@ -1,4 +1,4 @@
-// c1.c
+// c1.c hex to b64
 
 #include <stdint.h>
 #include <stdio.h>
@@ -8,7 +8,7 @@
 
 int main() {
   uint32_t size = 6;
-  char* in = "affaaf";
+  char* in = "af";
 
   char* out = calloc( size, sizeof( char ) );
   encode_base64( in, size, out );
@@ -16,4 +16,6 @@ int main() {
   printf("Got: %s\n", out);
 
   free(out);
+
+  return 0;
 }

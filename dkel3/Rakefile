@@ -14,8 +14,15 @@ task :build do
     root = File.basename(s, ".*")
     `clang #{s} util.o -Wall -Wextra -Wpedantic -o #{root}`
   end
+
+  print "\n----------------------------------------\n\n"
 end
 
 task :run do
   exec( "./c2" )
+end
+
+task test: ["build"]
+task :test do
+  exec( "./runner" )
 end

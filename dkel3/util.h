@@ -41,8 +41,21 @@ uint8_t* to_byte_array( char* hex, uint32_t size );
 char to_hex( uint8_t in );
 
 // ------------------------------------
-// to_hex
-//  * turn byte into hex character
+// xor two equal length hex strings
+// ------------------------------------
+
+void xor_buffer( char* a, char* b, uint32_t size, char* out );
+
+// ------------------------------------
+// xors two hex characters
+//  * return: hex character
 // ------------------------------------
 
 char xor_char( char a, char b );
+
+// ------------------------------------
+// xors a hex input string with a single byte
+//  * takes input string two characters at a time
+// ------------------------------------
+
+void xor_single( char* in, uint32_t size, uint8_t key, char* out );

@@ -125,6 +125,23 @@ char to_hex( uint8_t in ) {
 }
 
 // ------------------------------------
+// xor two equal length hex strings
+// ------------------------------------
+
+void xor_buffer( char* a, char* b, uint32_t size, char* out ) {
+  uint8_t* a_bytes = to_byte_array( a, size );
+  uint8_t* b_bytes = to_byte_array( b, size );
+
+  for ( uint32_t i = 0; i < size; i++ ) {
+    uint8_t x = *(a_bytes + i) ^ *(b_bytes + i);
+    *(out + i) = to_hex( x );
+  }
+
+  free( a_bytes );
+  free( b_bytes );
+}
+
+// ------------------------------------
 // to_hex
 //  * turn byte into hex character
 // ------------------------------------
@@ -133,4 +150,22 @@ char xor_char( char a, char b ) {
   uint8_t ret = parse_hex( a ) ^ parse_hex( b );
 
   return to_hex( ret );
+}
+
+// ------------------------------------
+// xors a hex input string with a single byte
+//  * takes input string two characters at a time
+// ------------------------------------
+
+void xor_single( char* in, uint32_t size, uint8_t key, char* out ) {
+  uint8_t upper_key = (key & 0xF0) >> 4;
+  uint8_t lower_key = key & 0x0F;
+
+  for ( uint32_t i = 0; i < size; i += 2 ) {
+    uint8_t upper = parse_hex( *(in + i) );
+    uint8_t lower = parse_hex( *(in + i + 1) );
+
+    *(out + i) = to_hex( upper ^ upper_key );
+    *(out + i + 1) = to_hex( lower ^ lower_key );
+  }
 }

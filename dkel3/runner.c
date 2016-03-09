@@ -10,16 +10,22 @@ void answer( uint8_t result );
 void testHexToBase64_NoPadding();
 void testHexToBase64_OnePadding();
 void testHexToBase64_TwoPadding();
+void testXorBuffer();
+void testXorSingle();
 
 int main() {
   testHexToBase64_NoPadding();
   testHexToBase64_OnePadding();
   testHexToBase64_TwoPadding();
+
+  testXorBuffer();
+
+  testXorSingle();
 }
 
 void answer( uint8_t result ) {
-  if (result) printf("Pass\n");
-  else        printf("Fail\n");
+  if (result) printf("\x1b[39;49mPass\n");
+  else        printf("\x1b[31mFail\n");
 }
 
 void testHexToBase64_NoPadding() {
@@ -60,6 +66,38 @@ void testHexToBase64_TwoPadding() {
   char* actual = calloc( 4, sizeof( char ) );
 
   encode_base64( in, 2, actual );
+
+  uint8_t result = compare( actual, expected, 4 );
+  answer( result );
+
+  free( actual );
+}
+
+void testXorBuffer() {
+  printf("testXor... \t\t\t\t\t");
+
+  char* in1 = "1c0111001f010100061a024b53535009181c";
+  char* in2 = "686974207468652062756c6c277320657965";
+  char* expected = "746865206b696420646f6e277420706c6179";
+  char* actual = calloc( 36, sizeof( char ) );
+
+  xor_buffer( in1, in2, 36, actual );
+
+  uint8_t result = compare( actual, expected, 36 );
+  answer( result );
+
+  free( actual );
+}
+
+void testXorSingle() {
+  printf("textXorSingle... \t\t\t\t");
+
+  char* in = "f00f";
+  uint8_t key = 0xFF;
+  char* expected = "0ff0";
+  char* actual = calloc( 4, sizeof( char ) );
+
+  xor_single( in, 4, key, actual );
 
   uint8_t result = compare( actual, expected, 4 );
   answer( result );

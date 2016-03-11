@@ -20,6 +20,12 @@ uint8_t compare( char* a, char* b, uint32_t size );
 void encode_base64( char* in, uint32_t size, char* out );
 
 // ------------------------------------
+// nibble_to_byte
+// ------------------------------------
+
+uint8_t nibbles_to_byte( uint8_t a, uint8_t b );
+
+// ------------------------------------
 // parse_hex
 //  * convert hex character into byte
 // ------------------------------------
@@ -31,7 +37,15 @@ uint8_t parse_hex( char in );
 //  * convert hex string into its byte array
 // ------------------------------------
 
-uint8_t* to_byte_array( char* hex, uint32_t size );
+uint8_t* to_nibble_array( char* hex, uint32_t size );
+
+// ------------------------------------
+// to_byte_array
+//  * convert hex string into byte array
+//  * size: num of chars in input hex string
+// ------------------------------------
+
+void to_byte_array( char* hex, size_t in_size, uint8_t* out, size_t out_size );
 
 // ------------------------------------
 // to_hex
@@ -59,3 +73,13 @@ char xor_char( char a, char b );
 // ------------------------------------
 
 void xor_single( char* in, uint32_t size, uint8_t key, char* out );
+
+
+// ------------------------------------
+// xor_single_byte_byte
+//  * input: byte array
+//  * output: byte_array
+//  * xors input array with a single byte key
+// ------------------------------------
+
+void xor_single_byte_byte(  uint8_t* in, size_t size, uint8_t key, uint8_t* out );

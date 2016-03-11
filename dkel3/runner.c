@@ -12,6 +12,8 @@ void testHexToBase64_OnePadding();
 void testHexToBase64_TwoPadding();
 void testXorBuffer();
 void testXorSingle();
+void testToByteArray();
+void testXorSingleByteByte();
 
 int main() {
   testHexToBase64_NoPadding();
@@ -21,6 +23,10 @@ int main() {
   testXorBuffer();
 
   testXorSingle();
+
+  testToByteArray();
+
+  testXorSingleByteByte();
 }
 
 void answer( uint8_t result ) {
@@ -101,6 +107,50 @@ void testXorSingle() {
 
   uint8_t result = compare( actual, expected, 4 );
   answer( result );
+
+  free( actual );
+}
+
+
+void testToByteArray() {
+  printf("testToByteArray... \t\t\t\t");
+
+  char* in = "f00f";
+  uint8_t expected[2] = { 0xF0, 0x0F };
+  uint8_t* actual = calloc( 2, sizeof( char ) );
+
+  to_byte_array(in, 4, actual, 2);
+
+  uint8_t equal = 1;
+  for ( uint8_t i = 0; i < 2; i++ ) {
+    if ( *(actual + i) != *(expected + i) ) {
+      equal = 0;
+    }
+  }
+
+  answer( equal );
+
+  free( actual );
+}
+
+void testXorSingleByteByte() {
+  printf("testXorSingleByteByte... \t\t\t");
+
+  uint8_t in[2] = { 0xF0, 0x0F };
+  uint8_t key = 0xFF;
+  uint8_t expected[2] = { 0x0F, 0xF0 };
+  uint8_t* actual = calloc( 2, sizeof( uint8_t ) );
+
+  xor_single_byte_byte( in, 2, key, actual );
+
+  uint8_t equal = 1;
+  for ( size_t i = 0; i < 2; i++ ) {
+    if ( *(actual + i) != *(expected + i) ) {
+      equal = 0;
+    }
+  }
+
+  answer( equal );
 
   free( actual );
 }

@@ -81,6 +81,14 @@ void encode_base64( char* in, uint32_t size, char* out ) {
 }
 
 // ------------------------------------
+// nibble_to_byte
+// ------------------------------------
+
+uint8_t nibbles_to_byte( uint8_t a, uint8_t b ) {
+  return ((a & 0xF) << 4) | (b & 0xF);
+}
+
+// ------------------------------------
 // parse_hex
 //  * convert hex character into byte
 // ------------------------------------
@@ -98,11 +106,18 @@ uint8_t parse_hex( char in ) {
 }
 
 // ------------------------------------
-// to_byte_array
-//  * convert hex string into its byte array
+// hex_to_ascii
+//  * convert hex string to ascii
 // ------------------------------------
 
-uint8_t* to_byte_array( char* hex, uint32_t size ) {
+//void hex_to_ascii( char* in,
+
+// ------------------------------------
+// to_nibble_array
+//  * convert hex string into its nibble array
+// ------------------------------------
+
+uint8_t* to_nibble_array( char* hex, uint32_t size ) {
   uint8_t* ret = calloc( size, sizeof( uint8_t ) );
   uint8_t* out = ret;
 
@@ -111,6 +126,32 @@ uint8_t* to_byte_array( char* hex, uint32_t size ) {
   }
 
   return ret;
+}
+
+// ------------------------------------
+// to_byte_array
+//  * convert hex string into byte array
+//  * size: num of chars in input hex string
+// ------------------------------------
+
+void to_byte_array( char* hex,
+                        size_t in_size,
+                        uint8_t* out,
+                        size_t out_size )
+{
+  // TODO: check out size?
+
+  char* p_in = hex;
+  uint8_t* p_out = out;
+
+  for ( size_t i = 0; i < in_size; i++ ) {
+    char a = parse_hex( *(p_in++) );
+    char b = parse_hex( *(p_in++) );
+
+    uint8_t next = nibbles_to_byte( a, b );
+
+    *(p_out++) = next;
+  }
 }
 
 // ------------------------------------
@@ -129,8 +170,8 @@ char to_hex( uint8_t in ) {
 // ------------------------------------
 
 void xor_buffer( char* a, char* b, uint32_t size, char* out ) {
-  uint8_t* a_bytes = to_byte_array( a, size );
-  uint8_t* b_bytes = to_byte_array( b, size );
+  uint8_t* a_bytes = to_nibble_array( a, size );
+  uint8_t* b_bytes = to_nibble_array( b, size );
 
   for ( uint32_t i = 0; i < size; i++ ) {
     uint8_t x = *(a_bytes + i) ^ *(b_bytes + i);
@@ -167,5 +208,22 @@ void xor_single( char* in, uint32_t size, uint8_t key, char* out ) {
 
     *(out + i) = to_hex( upper ^ upper_key );
     *(out + i + 1) = to_hex( lower ^ lower_key );
+  }
+}
+
+// ------------------------------------
+// xor_single_byte_byte
+//  * input: byte array
+//  * output: byte_array
+//  * xors input array with a single byte key
+// ------------------------------------
+
+void xor_single_byte_byte(  uint8_t* in,
+                            size_t size,
+                            uint8_t key,
+                            uint8_t* out )
+{
+  for ( size_t i = 0; i < size; i++ ) {
+    *(out + i) = *(in + i) ^ key;
   }
 }

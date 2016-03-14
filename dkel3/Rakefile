@@ -6,13 +6,14 @@ task default: ["build", "run"]
 
 task :build do
   puts "Building..."
-  source = Rake::FileList["**/*.c"].exclude("util.c")
+  source = Rake::FileList["**/*.c"].exclude("util.c", "stats.c")
 
   `clang util.c -Wall -Wextra -Wpedantic -c`
+  `clang stats.c -Wall -Wextra -Wpedantic -c`
 
   source.each do |s|
     root = File.basename(s, ".*")
-    `clang #{s} util.o -Wall -Wextra -Wpedantic -o #{root}`
+    `clang #{s} util.o stats.o -Wall -Wextra -Wpedantic -o #{root}`
   end
 
   print "\n----------------------------------------\n\n"

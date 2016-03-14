@@ -11,6 +11,12 @@
 uint8_t compare( char* a, char* b, uint32_t size );
 
 // ------------------------------------
+// copy from on buffer to another in bytes
+// ------------------------------------
+
+void copy( void* a, void* b, uint32_t bytes );
+
+// ------------------------------------
 // encode_base64
 //  * in: hex string
 //  * size: length of input string

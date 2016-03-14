@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "util.h"
+#include "stats.h"
 
 void answer( uint8_t result );
 void testHexToBase64_NoPadding();
@@ -14,6 +15,9 @@ void testXorBuffer();
 void testXorSingle();
 void testToByteArray();
 void testXorSingleByteByte();
+void testHisto();
+void testScoreHistoSum();
+void testCopy();
 
 int main() {
   testHexToBase64_NoPadding();
@@ -27,6 +31,11 @@ int main() {
   testToByteArray();
 
   testXorSingleByteByte();
+
+  testHisto();
+  testScoreHistoSum();
+
+  testCopy();
 }
 
 void answer( uint8_t result ) {
@@ -80,7 +89,7 @@ void testHexToBase64_TwoPadding() {
 }
 
 void testXorBuffer() {
-  printf("testXor... \t\t\t\t\t");
+  printf("testXorBuffer... \t\t\t\t");
 
   char* in1 = "1c0111001f010100061a024b53535009181c";
   char* in2 = "686974207468652062756c6c277320657965";
@@ -153,4 +162,58 @@ void testXorSingleByteByte() {
   answer( equal );
 
   free( actual );
+}
+
+void testHisto() {
+  printf("testHisto... \t\t\t\t\t");
+
+  char* in = "AaabBc";
+  float expected[26] = {  0.5f, 2.0f/6.0f, 1.0f/6.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                          0.0f };
+
+  float* actual = calloc( 26, sizeof( float ) );
+
+  histo( in, 6, actual );
+
+  uint8_t equal = 1;
+  for ( uint8_t i = 0; i < 26; i++ ) {
+    if ( *(actual + i) != *(expected + i) ) {
+      printf("index: %d:%f:%f\n", i, actual[i], expected[i] );
+      equal = 0;
+    }
+  }
+
+  answer( equal );
+
+  free( actual );
+}
+
+void testScoreHistoSum() {
+  printf("testScoreHisto... \t\t\t\t");
+
+  float in_a[26] = { 1.0f,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0 };
+  float in_b[26] = { 0.5f,0.5f,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0 };
+
+  float expected = 1.0f;
+
+  float actual = score_histo_sum( in_a, in_b );
+
+  if (actual != expected) answer( 0 );
+  else answer( 1 );
+}
+
+void testCopy() {
+  printf("testCopy... \t\t\t\t\t");
+
+  char in[4] = "ABCD";
+  char out[4];
+
+  copy( in, out, 4 );
+
+  uint8_t result = compare( in, out, 4);
+  answer( result );
 }

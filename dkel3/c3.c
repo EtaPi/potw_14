@@ -28,7 +28,7 @@ int main() {
   for ( uint8_t i = 0; i < 0xFF; i++ ) {
     xor_single_byte_byte( enc_bytes, size/2, i, temp );
 
-    float h[26];
+    float h[26] = {0};
     histo( (char* )temp, size/2, h );
 
     float score = score_histo_sum( h, english_freq );
@@ -55,8 +55,10 @@ int main() {
 
 uint8_t valid( uint8_t* in, size_t size ) {
   uint8_t valid = 1;
+
   for ( size_t i = 0; i < size; i++ ) {
     uint8_t a = *(in + i);
+
     if (a < 32 || 126 < a) {
       valid = 0;
     }

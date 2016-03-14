@@ -168,14 +168,13 @@ void testHisto() {
   printf("testHisto... \t\t\t\t\t");
 
   char* in = "AaabBc";
-  float expected[26] = {  0.5f, 2.0f/6.0f, 1.0f/6.0f, 0.0f, 0.0f,
-                          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                          0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-                          0.0f };
 
-  float* actual = calloc( 26, sizeof( float ) );
+  float expected[26] = {0};
+  expected[0] = 3.0f / 6.0f;
+  expected[1] = 2.0f / 6.0f;
+  expected[2] = 1.0f / 6.0f;
+
+  float actual[26] = {0};
 
   histo( in, 6, actual );
 
@@ -188,8 +187,6 @@ void testHisto() {
   }
 
   answer( equal );
-
-  free( actual );
 }
 
 void testScoreHistoSum() {
@@ -210,7 +207,7 @@ void testCopy() {
   printf("testCopy... \t\t\t\t\t");
 
   char in[4] = "ABCD";
-  char out[4];
+  char out[4] = {0};
 
   copy( in, out, 4 );
 

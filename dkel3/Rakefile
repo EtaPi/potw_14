@@ -2,18 +2,20 @@
 
 require 'rake'
 
+OPTS = "-Wall -Wextra -Wpedantic -Wstrict-overflow -march=native"
+
 task default: ["build", "run"]
 
 task :build do
   puts "Building..."
   source = Rake::FileList["**/*.c"].exclude("util.c", "stats.c")
 
-  `clang util.c -Wall -Wextra -Wpedantic -c`
-  `clang stats.c -Wall -Wextra -Wpedantic -c`
+  `clang util.c #{OPTS} -c`
+  `clang stats.c #{OPTS} -c`
 
   source.each do |s|
     root = File.basename(s, ".*")
-    `clang #{s} util.o stats.o -Wall -Wextra -Wpedantic -o #{root}`
+    `clang #{s} util.o stats.o #{OPTS} -o #{root}`
   end
 
   print "\n----------------------------------------\n\n"

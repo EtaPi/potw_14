@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <stdio.h>
+
 // ------------------------------------
 // compare
 //  * compare two equal length string buffers
@@ -39,7 +41,15 @@ uint8_t nibbles_to_byte( uint8_t a, uint8_t b );
 uint8_t parse_hex( char in );
 
 // ------------------------------------
-// to_byte_array
+// readline
+//  * input: FILE pointer
+//  * returns number of chars readline
+// ------------------------------------
+
+size_t readline( FILE* in, char* out );
+
+// ------------------------------------
+// to_nibble_array
 //  * convert hex string into its byte array
 // ------------------------------------
 
@@ -51,7 +61,7 @@ uint8_t* to_nibble_array( char* hex, uint32_t size );
 //  * size: num of chars in input hex string
 // ------------------------------------
 
-void to_byte_array( char* hex, size_t in_size, uint8_t* out, size_t out_size );
+void to_byte_array( char* hex, uint8_t* out, size_t out_size );
 
 // ------------------------------------
 // to_hex
@@ -80,6 +90,14 @@ char xor_char( char a, char b );
 
 void xor_single( char* in, uint32_t size, uint8_t key, char* out );
 
+// ------------------------------------
+// xor_single_hex_byte
+//  * input: hex string
+//  * output: byte_array
+//  * xors input string with a single byte key
+// ------------------------------------
+
+void xor_single_hex_byte(  char* in, size_t size, uint8_t key, uint8_t* out );
 
 // ------------------------------------
 // xor_single_byte_byte

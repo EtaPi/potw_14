@@ -18,6 +18,7 @@ void testXorSingleByteByte();
 void testHisto();
 void testScoreHistoSum();
 void testCopy();
+void testReadline();
 
 int main() {
   testHexToBase64_NoPadding();
@@ -36,6 +37,8 @@ int main() {
   testScoreHistoSum();
 
   testCopy();
+
+  testReadline();
 }
 
 void answer( uint8_t result ) {
@@ -128,7 +131,7 @@ void testToByteArray() {
   uint8_t expected[2] = { 0xF0, 0x0F };
   uint8_t* actual = calloc( 2, sizeof( char ) );
 
-  to_byte_array(in, 4, actual, 2);
+  to_byte_array(in, actual, 2);
 
   uint8_t equal = 1;
   for ( uint8_t i = 0; i < 2; i++ ) {
@@ -212,5 +215,18 @@ void testCopy() {
   copy( in, out, 4 );
 
   uint8_t result = compare( in, out, 4);
+  answer( result );
+}
+
+void testReadline() {
+  printf("testReadline... \t\t\t\t");
+
+  FILE* f = fopen("4.txt", "r");
+  char* expected = "0e3647e8592d35514a081243582536ed3de6734059001e3f535ce6271032";
+  char actual[60];
+
+  readline( f, actual );
+
+  uint8_t result = compare( actual, expected, 60 );
   answer( result );
 }

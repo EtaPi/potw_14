@@ -3,19 +3,21 @@
 require 'rake'
 
 OPTS = "-Wall -Wextra -Wpedantic -Wstrict-overflow -march=native"
+LIBS = ["util", "freq", "stats"];
 
 task default: ["build", "run"]
 
 task :build do
   puts "Building..."
-  source = Rake::FileList["**/*.c"].exclude("util.c", "stats.c")
+  source = Rake::FileList["**/*.c"].exclude( *cify(LIBS) )
 
-  `clang util.c #{OPTS} -c`
-  `clang stats.c #{OPTS} -c`
+  LIBS.each do |lib|
+    `clang #{lib}.c #{OPTS} -c`
+  end
 
   source.each do |s|
     root = File.basename(s, ".*")
-    `clang #{s} util.o stats.o #{OPTS} -o #{root}`
+    `clang #{s} #{ oify(LIBS).join " " } #{OPTS} -o #{root}`
   end
 
   print "\n----------------------------------------\n\n"
@@ -28,4 +30,12 @@ end
 task test: ["build"]
 task :test do
   exec( "./runner" )
+end
+
+def cify names
+  names.map{ |i| i+".c" }
+end
+
+def oify names
+  names.map{ |i| i+".o" }
 end

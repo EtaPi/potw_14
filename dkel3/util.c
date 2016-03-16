@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "util.h"
 
 // ------------------------------------
@@ -22,7 +23,7 @@ uint8_t compare( char* a, char* b, uint32_t size ) {
 }
 
 // ------------------------------------
-// copy from on buffer to another in bytes
+// copy from one buffer to another in bytes
 // ------------------------------------
 
 void copy( void* a, void* b, uint32_t bytes ) {
@@ -119,11 +120,22 @@ uint8_t parse_hex( char in ) {
 }
 
 // ------------------------------------
-// hex_to_ascii
-//  * convert hex string to ascii
+// readline
+//  * input: FILE pointer
+//  * returns number of chars readline
 // ------------------------------------
 
-//void hex_to_ascii( char* in,
+size_t readline( FILE* in, char* out ) {
+  char c;
+  size_t count = 0;
+
+  while ( (c = fgetc( in )) != EOF  && ( c != '\n' ) ) {
+    *(out++) = c;
+    count++;
+  }
+
+  return count;
+}
 
 // ------------------------------------
 // to_nibble_array
@@ -147,13 +159,8 @@ uint8_t* to_nibble_array( char* hex, uint32_t size ) {
 //  * size: num of chars in input hex string
 // ------------------------------------
 
-void to_byte_array( char* hex,
-                        size_t in_size,
-                        uint8_t* out,
-                        size_t out_size )
+void to_byte_array( char* hex, uint8_t* out, size_t out_size )
 {
-  // TODO: check out size?
-
   char* p_in = hex;
   uint8_t* p_out = out;
 
@@ -222,6 +229,22 @@ void xor_single( char* in, uint32_t size, uint8_t key, char* out ) {
     *(out + i) = to_hex( upper ^ upper_key );
     *(out + i + 1) = to_hex( lower ^ lower_key );
   }
+}
+
+// ------------------------------------
+// xor_single_hex_byte
+//  * input: hex string
+//  * output: byte_array
+//  * xors input string with a single byte key
+// ------------------------------------
+
+void xor_single_hex_byte(  char* in, size_t size, uint8_t key, uint8_t* out ) {
+  uint8_t* enc_bytes = calloc( size/2, sizeof( uint8_t ) );
+  to_byte_array( in, enc_bytes, size/2 );
+
+  xor_single_byte_byte( enc_bytes, size/2, key, out );
+
+  free( enc_bytes );
 }
 
 // ------------------------------------

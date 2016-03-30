@@ -36,6 +36,27 @@ float score_hex( char* in, size_t size, uint8_t key ) {
 }
 
 // ------------------------------------
+// break_xor_single_hex: find the key yielding the lowest freq score
+//  * input: string in hex
+// ------------------------------------
+
+float break_xor_single_hex( char* in, size_t size, uint8_t* out_key ) {
+  float lowest = FLT_MAX;
+  uint8_t key = 0;
+
+  for ( uint8_t i = 0; i < 0xFF; i++ ) {
+    float score = score_hex( in, size, i );
+    if (score < lowest) {
+      lowest = score;
+      key = i;
+    }
+  }
+
+  *out_key = key;
+  return lowest;
+}
+
+// ------------------------------------
 // PRIVATE METHODS
 // ------------------------------------
 
@@ -45,7 +66,7 @@ uint8_t valid( uint8_t* in, size_t size ) {
   for ( size_t i = 0; i < size; i++ ) {
     uint8_t a = *(in + i);
 
-    if (a < 32 || 126 < a) {
+    if ( !(32 <= a && a <= 126) && !(9 <= a && a <= 13) ) {
       valid = 0;
     }
   }

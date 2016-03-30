@@ -20,7 +20,7 @@ void histo( char* in, size_t size, float* out ) {
   }
 
   // normalize
-  for ( uint8_t i = 0; i < 26; i++ ) {
+  for ( size_t i = 0; i < 26; i++ ) {
     *(out + i) /= (float)size;
   }
 }
@@ -28,6 +28,7 @@ void histo( char* in, size_t size, float* out ) {
 float score_histo_sum( float* a, float* b ) {
   float ret = 0;
   float diff = 0;
+
   for ( uint8_t i = 0; i < 26; i++ ) {
     diff = fabs( *(b + i) - *(a + i) );
     ret += diff;

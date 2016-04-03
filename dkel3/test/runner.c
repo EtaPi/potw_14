@@ -4,10 +4,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "util.h"
-#include "stats.h"
+#include "../lib/util.h"
+#include "../lib/stats.h"
 
-void answer( uint8_t result );
+#include "runner_util.h"
+
 void testHexToBase64_NoPadding();
 void testHexToBase64_OnePadding();
 void testHexToBase64_TwoPadding();
@@ -39,11 +40,6 @@ int main() {
   testCopy();
 
   testReadline();
-}
-
-void answer( uint8_t result ) {
-  if (result) printf("\x1b[39;49mPass\n");
-  else        printf("\x1b[31mFail\n");
 }
 
 void testHexToBase64_NoPadding() {

@@ -3,39 +3,82 @@
 require 'rake'
 
 OPTS = "-Wall -Wextra -Wpedantic -Wstrict-overflow -march=native"
-LIBS = ["util", "freq", "stats"];
+LIBS = ["util", "freq", "stats", "test/runner_util"];
 
 task default: ["build", "run"]
 
+directory "build/test"
+directory "build/lib"
+directory "bin"
+
+task build: ["build/test", "build/lib", "bin"]
 task :build do
   puts "Building..."
-  source = Rake::FileList["**/*.c"].exclude( *cify(LIBS) )
 
-  LIBS.each do |lib|
-    `clang #{lib}.c #{OPTS} -c`
-  end
-
-  source.each do |s|
-    root = File.basename(s, ".*")
-    `clang #{s} #{ oify(LIBS).join " " } #{OPTS} -o #{root}`
-  end
+  # source = Rake::FileList["**/*.c"].exclude( *cify(LIBS) )
+  #
+  # LIBS.each do |lib|
+  #   puts "  Lib: #{lib}"
+  #   `clang #{lib}.c #{OPTS} -c -o build/#{lib}.o`
+  # end
+  #
+  # source.each do |s|
+  #   root = File.basename(s, ".*")
+  #   `clang #{s} #{ oify(LIBS).join " " } #{OPTS} -o build/#{root}`
+  # end
 
   print "\n----------------------------------------\n\n"
 end
 
 task :run do
-  exec( "./c2" )
+  exec( "./bin/c2" )
 end
 
-task test: ["build"]
-task :test do
-  exec( "./runner" )
+task :clean => ["lib:clean", "test:clean"]
+
+namespace "lib" do
+  lib_objs = Rake::FileList["lib/*.c"].map do |f|
+    File.join("build/", f.ext('.o') )
+  end
+
+  task :build => lib_objs
+
+  task :clean do
+    rm Rake::FileList["build/lib/*"]
+  end
 end
 
-def cify names
-  names.map{ |i| i+".c" }
+namespace "test" do
+  test_objs = Rake::FileList["test/*.c"].map do |f|
+    File.join("build/", f.ext('.o') )
+  end
+
+  task :build => test_objs
+
+  task :run => 'bin/runner' do
+    exec( "./bin/runner" )
+  end
+
+  file 'bin/runner' => ["test:build", "lib:build"] do
+    lib_objs = Rake::FileList["build/lib/*.o"].join " "
+
+    `clang build/test/runner.o #{test_objs.join " "} #{lib_objs} #{OPTS} -o bin/runner`
+  end
+
+  rule( /build\/.*\.o$/ => [ proc {|tn| tn.sub("build/", "").ext(".c")} ] ) do |t|
+    puts "Compiling #{t.source}..."
+    `clang #{t.source} #{OPTS} -c -o #{t.name}`
+  end
+
+  task :clean do
+    rm Rake::FileList["build/test/*"]
+  end
 end
 
-def oify names
-  names.map{ |i| i+".o" }
+task :test => "test:run"
+
+
+rule '.o' => ['.c'] do |t|
+  puts "Compiling #{t.source}..."
+  `clang #{t.source} #{OPTS} -c -o build/#{t.name}`
 end

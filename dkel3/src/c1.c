@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "util.h"
+#include "../lib/util.h"
 
 int main() {
   uint32_t size = 6;

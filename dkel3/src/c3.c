@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <float.h>
 
-#include "util.h"
-#include "stats.h"
-#include "freq.h"
+#include "../lib/util.h"
+#include "../lib/stats.h"
+#include "../lib/freq.h"
 
 uint8_t valid( uint8_t* in, size_t size );
 

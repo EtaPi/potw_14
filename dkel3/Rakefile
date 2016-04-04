@@ -5,36 +5,45 @@ require 'rake'
 OPTS = "-Wall -Wextra -Wpedantic -Wstrict-overflow -march=native"
 LIBS = ["util", "freq", "stats", "test/runner_util"];
 
-task default: ["build", "run"]
+task default: ["src", "test"]
 
+directory "build/src"
 directory "build/test"
 directory "build/lib"
 directory "bin"
 
-task build: ["build/test", "build/lib", "bin"]
-task :build do
-  puts "Building..."
+task :build => "src:build"
+task :test => "test:run"
+task :clean => ["src:clean", "lib:clean", "test:clean"]
 
-  # source = Rake::FileList["**/*.c"].exclude( *cify(LIBS) )
-  #
-  # LIBS.each do |lib|
-  #   puts "  Lib: #{lib}"
-  #   `clang #{lib}.c #{OPTS} -c -o build/#{lib}.o`
-  # end
-  #
-  # source.each do |s|
-  #   root = File.basename(s, ".*")
-  #   `clang #{s} #{ oify(LIBS).join " " } #{OPTS} -o build/#{root}`
-  # end
+namespace "src" do
+  src_files = Rake::FileList["src/*.c"]
 
-  print "\n----------------------------------------\n\n"
+  src_objs = src_files.map do |f|
+    File.join("build/", f.ext( '.o' ) )
+  end
+
+  task :build => src_objs
+  task :build => ["bin", "build/src"]
+  task :build => "lib:build"
+  task :build do
+    lib_objs = Rake::FileList[ "build/lib/*.o" ].join " "
+
+    src_files.each do |f|
+      src_obj = File.join( "build", f.ext( '.o' ) )
+
+      out = File.basename( f.ext( '' ) )
+      puts "Compiling #{out}..."
+
+      `clang #{src_obj} #{lib_objs} #{OPTS} -o bin/#{out}`
+    end
+  end
+
+  task :clean do
+    rm Rake::FileList["build/src/*"]
+    rm Rake::FileList["bin/c*"]
+  end
 end
-
-task :run do
-  exec( "./bin/c2" )
-end
-
-task :clean => ["lib:clean", "test:clean"]
 
 namespace "lib" do
   lib_objs = Rake::FileList["lib/*.c"].map do |f|
@@ -42,6 +51,7 @@ namespace "lib" do
   end
 
   task :build => lib_objs
+  task :build => ["bin", "build/lib"]
 
   task :clean do
     rm Rake::FileList["build/lib/*"]
@@ -54,6 +64,7 @@ namespace "test" do
   end
 
   task :build => test_objs
+  task :build => ["bin", "build/test"]
 
   task :run => 'bin/runner' do
     exec( "./bin/runner" )
@@ -62,12 +73,7 @@ namespace "test" do
   file 'bin/runner' => ["test:build", "lib:build"] do
     lib_objs = Rake::FileList["build/lib/*.o"].join " "
 
-    `clang build/test/runner.o #{test_objs.join " "} #{lib_objs} #{OPTS} -o bin/runner`
-  end
-
-  rule( /build\/.*\.o$/ => [ proc {|tn| tn.sub("build/", "").ext(".c")} ] ) do |t|
-    puts "Compiling #{t.source}..."
-    `clang #{t.source} #{OPTS} -c -o #{t.name}`
+    `clang #{test_objs.join " "} #{lib_objs} #{OPTS} -o bin/runner`
   end
 
   task :clean do
@@ -75,10 +81,12 @@ namespace "test" do
   end
 end
 
-task :test => "test:run"
-
-
 rule '.o' => ['.c'] do |t|
   puts "Compiling #{t.source}..."
   `clang #{t.source} #{OPTS} -c -o build/#{t.name}`
+end
+
+rule( /build\/.*\.o$/ => [ proc {|tn| tn.sub("build/", "").ext(".c")} ] ) do |t|
+  puts "Compiling #{t.source}..."
+  `clang #{t.source} #{OPTS} -c -o #{t.name}`
 end

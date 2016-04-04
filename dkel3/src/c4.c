@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <float.h>
 
-#include "util.h"
-#include "stats.h"
-#include "freq.h"
+#include "../lib/util.h"
+#include "../lib/stats.h"
+#include "../lib/freq.h"
 
 typedef struct {
   char raw[61];

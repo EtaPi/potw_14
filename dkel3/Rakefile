@@ -3,7 +3,6 @@
 require 'rake'
 
 OPTS = "-Wall -Wextra -Wpedantic -Wstrict-overflow -march=native"
-LIBS = ["util", "freq", "stats", "test/runner_util"];
 
 task default: ["src", "test"]
 
@@ -78,6 +77,7 @@ namespace "test" do
 
   task :clean do
     rm Rake::FileList["build/test/*"]
+    rm_f "bin/runner"
   end
 end
 
